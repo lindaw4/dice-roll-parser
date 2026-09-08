@@ -1,0 +1,21 @@
+{
+  "name": "dice-roll-parser",
+  "version": "0.1.0",
+  "description": "Strict-by-default parser and roller for dice notation (2d6+3, 4d6kh3, ...).",
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/dice.js",
+  "types": "dist/dice.d.ts",
+  "bin": {
+    "dice": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
