@@ -108,3 +108,9 @@ in package.json.
 
 There are no third-party dependencies. `npm run build` runs `tsc` and
 writes plain JS to `dist/`.
+
+## Testing
+
+`npm test` compiles the project and runs `src/dice.test.ts` (compiled to
+`dist/dice.test.js`) with Node's built-in test runner. No test framework
+dependency needed.
