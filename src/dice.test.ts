@@ -135,3 +135,44 @@ test('a negative sign subtracts the term subtotal from the total', () => {
   const result = roll(expr, sequence(6, 6, 3))
   assert.equal(result.total, 12 - 3)
 })
+
+test('parses fudge dice with an implicit count of 1', () => {
+  const expr = parse('dF')
+  const term = expr.terms[0]
+  assert.equal(term.type, 'dice')
+  if (term.type === 'dice') {
+    assert.equal(term.count, 1)
+    assert.equal(term.sides, 3)
+    assert.equal(term.fudge, true)
+  }
+})
+
+test('rejects lowercase fudge dice in strict mode but accepts it lenient', () => {
+  assert.throws(() => parse('4df'), DiceSyntaxError)
+  const expr = parse('4df', { lenient: true })
+  const term = expr.terms[0]
+  assert.equal(term.type, 'dice')
+  if (term.type === 'dice') {
+    assert.equal(term.fudge, true)
+  }
+})
+
+test('rolls fudge dice as -1, 0, or +1 per die', () => {
+  const expr = parse('4dF')
+  const result = roll(expr, sequence(1, 2, 3, 2))
+  assert.deepEqual(result.rolls[0].values, [-1, 0, 1, 0])
+  assert.equal(result.rolls[0].description, '4dF')
+  assert.equal(result.total, 0)
+})
+
+test('parses percentile shorthand as an ordinary d100', () => {
+  const expr = parse('d%')
+  const term = expr.terms[0]
+  assert.equal(term.type, 'dice')
+  if (term.type === 'dice') {
+    assert.equal(term.sides, 100)
+    assert.equal(term.fudge, false)
+  }
+  const result = roll(expr, sequence(42))
+  assert.equal(result.total, 42)
+})

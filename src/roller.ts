@@ -38,7 +38,8 @@ export function roll(expression: DiceExpression, randomSource: RandomSource = de
 
     const values: number[] = []
     for (let n = 0; n < term.count; n++) {
-      values.push(randomSource(term.sides))
+      const raw = randomSource(term.sides)
+      values.push(term.fudge ? raw - 2 : raw)
     }
 
     const kept = applyModifiers(values, term.modifiers)
@@ -78,7 +79,8 @@ function applyModifiers(values: number[], modifiers: Modifier[]): number[] {
 
 function describeDiceTerm(term: DiceTerm): string {
   const modifierText = term.modifiers.map((m) => `${modifierKey(m.kind)}${m.count}`).join('')
-  return `${term.count}d${term.sides}${modifierText}`
+  const sidesText = term.fudge ? 'F' : `${term.sides}`
+  return `${term.count}d${sidesText}${modifierText}`
 }
 
 function modifierKey(kind: ModifierKind): string {

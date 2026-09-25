@@ -14,6 +14,7 @@ export interface DiceTerm {
   sign: 1 | -1
   count: number
   sides: number
+  fudge: boolean
   modifiers: Modifier[]
 }
 
@@ -73,6 +74,7 @@ export function parse(rawInput: string, options: ParseOptions = {}): DiceExpress
     for (const key of Object.keys(MODIFIER_KEYWORDS)) {
       input = input.replace(new RegExp(key, 'gi'), key)
     }
+    input = input.replace(/f/gi, 'F')
   }
 
   const terms: Term[] = []
@@ -100,14 +102,26 @@ export function parse(rawInput: string, options: ParseOptions = {}): DiceExpress
     if (input[i] === 'd') {
       i++
       const sidesStart = i
-      while (i < input.length && isDigit(input[i])) i++
-      const sidesText = input.slice(sidesStart, i)
-      if (sidesText.length === 0) {
-        throw new DiceSyntaxError('expected a number of sides after "d"', original, i)
+      let sides: number
+      let fudge = false
+
+      if (input[i] === 'F') {
+        i++
+        sides = 3
+        fudge = true
+      } else if (input[i] === '%') {
+        i++
+        sides = 100
+      } else {
+        while (i < input.length && isDigit(input[i])) i++
+        const sidesText = input.slice(sidesStart, i)
+        if (sidesText.length === 0) {
+          throw new DiceSyntaxError('expected a number of sides, "F", or "%" after "d"', original, i)
+        }
+        sides = parseStrictNumber(sidesText, original, sidesStart, lenient)
       }
 
       const count = countText.length === 0 ? 1 : parseStrictNumber(countText, original, numStart, lenient)
-      const sides = parseStrictNumber(sidesText, original, sidesStart, lenient)
 
       const modifiers: Modifier[] = []
       while (true) {
@@ -136,7 +150,7 @@ export function parse(rawInput: string, options: ParseOptions = {}): DiceExpress
         }
       }
 
-      terms.push({ type: 'dice', sign, count, sides, modifiers })
+      terms.push({ type: 'dice', sign, count, sides, fudge, modifiers })
     } else if (countText.length > 0) {
       const value = parseStrictNumber(countText, original, numStart, lenient)
       terms.push({ type: 'constant', sign, value })

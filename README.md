@@ -38,10 +38,13 @@ NdSkhK         keep the highest K of the N rolls
 NdSklK         keep the lowest K of the N rolls
 NdSdhK         drop the highest K of the N rolls
 NdSdlK         drop the lowest K of the N rolls
+NdF            roll N fate/fudge dice, each worth -1, 0, or +1
+Nd%            shorthand for Nd100
 +N / -N        a flat modifier
 ```
 
-Terms chain with `+` and `-`, e.g. `4d6kh3+2d4-1`.
+Terms chain with `+` and `-`, e.g. `4d6kh3+2d4-1`. `F` must be uppercase in
+strict mode, same as `d`; `--lenient` accepts `4df` and normalizes it.
 
 ## Library usage
 
