@@ -3,7 +3,8 @@ import { parse, roll, DiceSyntaxError } from './dice.js'
 
 function main(argv: string[]): number {
   const lenient = argv.includes('--lenient')
-  const args = argv.filter((arg) => arg !== '--lenient')
+  const json = argv.includes('--json')
+  const args = argv.filter((arg) => arg !== '--lenient' && arg !== '--json')
 
   if (args.length === 0) {
     printUsage()
@@ -28,6 +29,13 @@ function main(argv: string[]): number {
 
   const result = roll(expression)
 
+  if (json) {
+    // Errors stay on stderr as plain text so stdout is always either
+    // one JSON document or nothing.
+    console.log(JSON.stringify({ notation, total: result.total, rolls: result.rolls }))
+    return 0
+  }
+
   for (const termRoll of result.rolls) {
     const sign = termRoll.sign === -1 ? '-' : '+'
     console.log(`  ${sign} ${termRoll.description}: [${termRoll.values.join(', ')}] -> ${termRoll.subtotal}`)
@@ -38,7 +46,7 @@ function main(argv: string[]): number {
 }
 
 function printUsage(): void {
-  console.error('usage: dice [--lenient] <notation>')
+  console.error('usage: dice [--lenient] [--json] <notation>')
   console.error('example: dice 4d6kh3+2')
 }
 

@@ -104,6 +104,16 @@ node dist/cli.js --lenient "1D20 + 5"
 total: 19
 ```
 
+`--json` prints a single JSON object instead of the text breakdown, with
+the notation, the total, and each term's `sign`, `description`, `values`,
+`kept` and `subtotal`. Syntax errors still go to stderr as plain text and
+the exit code is 1.
+
+```
+node dist/cli.js --json 2d6+3
+{"notation":"2d6+3","total":10,"rolls":[{"sign":1,"description":"2d6","values":[3,4],"kept":[3,4],"subtotal":7},{"sign":1,"description":"3","values":[3],"kept":[3],"subtotal":3}]}
+```
+
 Once published, the CLI is also reachable as `dice` via the `bin` entry
 in package.json.
 
